@@ -37,7 +37,7 @@ The code uses the following proposed ES.next extension:
    *  the .{ operator -- extends the LHS object with properties from an object literal
    *  concise method properties in obj lits - foo() {} defines a non-enumerable function data property
    *  let and const declarations
-   *  super propertry reference
+   *  super propertry references
    *  private names created via Name.create
    *  using [expr] in the propertyname position in an object literal, evaluate the expr to get the name
    
@@ -55,16 +55,16 @@ Object.getPrototypeOf(bar.prototype)===foo.prototype;  //true
 
 This experiment defines "classes" based upon the following code pattern:
 
-const className = superClass <| function(/*constructor parameters) {
-  /*constructor body*/
-  super.constructor(/*arguments to super constructor*/);
+const className = superClass <| function(/*constructor parameters * /) {
+  //constructor body 
+  super.constructor(/*arguments to super constructor * /);
   this.{
-    /* per instance property definitions */
+    //per instance property definitions
   };
 }.prototype.{
-  /*instance properties defined on prototype*/
+  //instance properties defined on prototype
 ).constructor.{
-  /*class (ie, constructor) properties */
+  //class (ie, constructor) properties 
 };
 
 Private named properties are defined within object literals as follows:
@@ -301,7 +301,7 @@ export const Set = Collection <| function(initialSize=2) {
 	  fixCollisionsFrom(index) {
 		 throw "need to implement Set.prototype.fixCollisionsFrom";
 	  }
-	).constructor.{
+	}.constructor.{
 	  className: "Set"
 	};
 
@@ -360,7 +360,7 @@ export const Bag = Collection <| function() {
 		  for (let i=0,count=assoc.value; i < count;++i) func(assoc.key);
 		  return this;
 	  }
-	).constructor.{
+	}.constructor.{
 	  className: "Bag"
 	};
 
@@ -438,7 +438,7 @@ export const Dictionary = Set <| function(...args) {
 		 throw "need to implement Set.prototype.findKeyIfAbsent";
 	  },
 	  errorKeyNotFound() {this.error("Key not found in "+this.class.name)}
-	).constructor.{
+	}.constructor.{
 	  className: "Dictionary"
 	};
 	
