@@ -16,7 +16,10 @@ The basic idea of these experiments is to explore using patterns of compositiona
 The experiments are:
 
  * ST80collections-exp1.js This is the basic experiment using <| and .{ and the compositional operators
+ * ST80collections-exp1-nocomma.js Just like exp1, except that it consider the comma is optional after a concise method or put/get property within an object literal
  * ST80collections-exp2.js This is the same experiment using <| and .={ and the compositional operators
  * ST80collections-exp3.js This is the same experiment using <| and .+{ and the compositional operators
  * ST80collections-exp0.js This is a baseline  using <| and the Object.extend() function as the compositional operators
 
+***** This Version is just like exp1 except that it consider the comma is optional 
+***** after a concise method or put/get property within an object literal
