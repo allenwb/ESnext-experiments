@@ -398,7 +398,7 @@ export const Dictionary = Object.extend(Object.extend(Set <| function(...args) {
 	  },
 	  //testing protocol
 	  includes(anObject) {
-		/*revert to the implementation in Collection"
+		/*revert to the implementation in Collection*/
 		return Collection.prototype.includes.call(this,anObject);
 	  },  
 	  //adding protocol
