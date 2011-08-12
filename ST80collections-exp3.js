@@ -65,7 +65,7 @@ const className = superClass <| function(/*constructor parameters * /) {
   };
 }.prototype.+{
   //instance properties defined on prototype
-).constructor.+{
+}.constructor.+{
   //class (ie, constructor) properties 
 };
 
