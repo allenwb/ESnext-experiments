@@ -14,6 +14,7 @@ rich class library that someone might want to implement using JavaScript.
 The basic idea of these experiments is to explore using patterns of compositional operators instead of a built-in class declaration syntactic structure.
 
 The experiments are:
+
  * ST80collections-exp1.js This is the basic experiment using <| and .{ and the compositional operators
  * ST80collections-exp2.js This is the same experiment using <| and .={ and the compositional operators
  * ST80collections-exp3.js This is the same experiment using <| and .+{ and the compositional operators
