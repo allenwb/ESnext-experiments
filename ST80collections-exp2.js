@@ -487,7 +487,7 @@ export const  SequenceableCollection = Collection <| function(){
 	}.prototype.={
       //"protected" methods for storage access
 	  get basicSize() {return this[storage].length-1},
-	  basicAt(index) {return this[storage][index],
+	  basicAt(index) {return this[storage][index]},
 	  basicAtPut(index,value) {
 	     this[storage][index] = value;
 	     return value;
@@ -699,7 +699,7 @@ export const  OrderedCollection = BasicStorageCollection <| function(space=10) {
       errorNoSuchElement() {
         this.error('attempt to index non-existent element in an ordered collection');
       },
-      emptyCheck() {
+      emptyCheck() {/*TODO*/},
       makeRoomAtLast() {this[storage].length += 1},
       makeRoomAtFirst() {
         const addedSpace = Math.max(Math.floor(this.basicSize*this.growthFactor),1);
