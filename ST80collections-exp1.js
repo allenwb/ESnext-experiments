@@ -5,7 +5,7 @@ for inclusion in future editions of the ECMAScript language specification.
 
 The purpose of this translation is to test the expressiveness of the extended language.
 
-This code has not been tested.  It undoubtably has bugs and probably has syntax errors.
+This code has not been tested.  It undoubtably has bugs and may have syntax errors.
 
 It is primarily based upon the description of the Collections classes in Chapter 13 of the
 Smalltalk blue book (http://stephane.ducasse.free.fr/FreeBooks/BlueBook/ ) with an occasional
@@ -107,25 +107,24 @@ export const Collection = AbstractClass <| function(n) {
 	  add(anObj) {this.subclassResponsibility},
 	  addAll(aCollection) {
 		const self=this;
-		aCollection.do(function (each) {self.add(each)};
+		aCollection.do(function (each) {self.add(each)});
 		return this;
 	  },
 	  //removing protocol
 	  removeIfAbsent(anObj,errHandler) {this.subclassResponsibility},
 	  remove(anObj) {
 		const self=this;
-		this.removeIfAbsent(anObj,function() {return this.errorNotFound()});
+		this.removeIfAbsent(anObj,function() {return self.errorNotFound()});
 		return this;
 	  },
 	  removeAll(aCollection) {
 		const self=this;
-		aCollection.do((function(each) {self.remove(each)};
+		aCollection.do(function(each) {self.remove(each)});
 		return aCollection;
 	  },
 	  //testing protocol
 	  isEmpty() {return this.size == 0},
 	  includes(anObj) {
-		const self=this;
 		try {
 		  this.do(function(each) {if (anObj === each) throw "object found"});
 		} catch (e) {
@@ -136,13 +135,13 @@ export const Collection = AbstractClass <| function(n) {
 	  },
 	  occurencesOf(anObj) {
 		let tally = 0;
-		this.do(function(each) {if (anObj===each) ++tally};
+		this.do(function(each) {if (anObj===each) ++tally});
 		return tally;
 	  },
 	  //accessing
 	  get size() {
 		 let tally = 0;
-		 this.do(function(each) {++tally};
+		 this.do(function(each) {++tally});
 		 return tally;
 	  },
 	  //enumerating protocol
@@ -155,13 +154,12 @@ export const Collection = AbstractClass <| function(n) {
 	  detect(pred) {
 		const self=this;
 		return this.detectIfNone(pred,function() {return this.errorNotFound()});
-	  ),
+	  },
 	  detectIfNone(pred,exceptFunc) {
-		this.do(function(each) {if (pred(each)) 
 		try {
 		  this.do(function(each) {if (pred(each)) throw {detected:each}});
 		} catch (e) {
-		  if (e.hasOwnProperty('detected') return e.detected;
+		  if (e.hasOwnProperty('detected')) return e.detected;
 		  else throw e;
 		};
 		return exceptFunc();
@@ -182,23 +180,23 @@ export const Collection = AbstractClass <| function(n) {
 	  //converting protocol
 	  asBag() {
 		const aBag = new Bag();
-		this.do(function(each){aBag.add(each});
+		this.do(function(each){aBag.add(each)});
 		return aBag;
 	  },
 	  asOrderedCollection() {
 		const anOrderedCollection = new OrderedCollection(this.size);
-		this.do(function(each){anOrderedCollection.addLast(each});
+		this.do(function(each){anOrderedCollection.addLast(each)});
 		return anOrderedCollection;
 	  },
 	  asSet() {
 		const aSet = new Set();
-		this.do(function(each){aSet.add(each});
+		this.do(function(each){aSet.add(each)});
 		return aSet;
 	  },
 	  asSortedCollection(sortFunc) {
 		const aSortedCollection = new SortedCollection(this.size);
 		if (sortFunc) aSortedCollection.sortFunction = sortFunc;
-		aSortedCollection.addAll(this});
+		aSortedCollection.addAll(this);
 		return aSortedCollection;
 	  },
 	  //printing protocol
@@ -213,7 +211,7 @@ export const Collection = AbstractClass <| function(n) {
 			};
 			if (element.printOn) element.printOn(aStream);
 			else aStream.nextPutAll(element.toString());
-		  };
+		  });
 		} catch(e) {
 			 if (e==="too long") return this;
 			 else throw e;
@@ -229,7 +227,7 @@ export const Collection = AbstractClass <| function(n) {
 	  get species() {return this.constructor},
 	  errorNotFound() {this.error("Object is not in the collection")},
 	  errorNotKeyed() {this.error(this.class.name+"s do not respond to keyed accessing messages")},
-	  errorEmptyCollection() {this.error("this collection is empty"),
+	  errorEmptyCollection() {this.error("this collection is empty")},
 	  emptyCheck() {
 	    if (this.isEmpty()) this.errorEmptyCollection();
 	  }
@@ -261,7 +259,7 @@ export const Set = Collection <| function(initialSize=2) {
 	  get size() {return this[setTally]},
 	  //testing protocol
 	  includes(anObject) {return this[setContents][this.findElementOrNil(anObject)]!==Collection.nil},
-	  occurrencesOf(anObject) { return this.includes(anObject)) ? 1 : 0},  
+	  occurrencesOf(anObject) { return this.includes(anObject) ? 1 : 0},  
 	  //adding protocol
 	  add(newObject) {
 		const index = this.findElementOrNil(newObject);
@@ -333,7 +331,7 @@ export const Bag = Collection <| function() {
 	  //testing protocol
 	  includes(anObject) {return this[bagContents].includesKey(anObject)},
 	  occurrencesOf(anObject) {
-		 return this.includes(anObject)) ? this[bagContents].at(anObject) : 0;
+		 return this.includes(anObject) ? this[bagContents].at(anObject) : 0;
 	  },
 	  //adding protocol
 	  add(newObject) {return this.addWithOccurrences(newObject,1)},
@@ -359,6 +357,7 @@ export const Bag = Collection <| function() {
 		this[bagContents].associationsDo(function(assoc) {
 		  for (let i=0,count=assoc.value; i < count;++i) func(assoc.key);
 		  return this;
+	    });
 	  }
 	}.constructor.{
 	  className: "Bag"
@@ -413,7 +412,7 @@ export const Dictionary = Set <| function(...args) {
 	  },
 	  //enumerating protocol
 	  do(func) {
-		 this.associationsDo(function(assoc) {func(assoc.value)};
+		 this.associationsDo(function(assoc) {func(assoc.value)});
 		 return this;
 	  },
 	  associationsDo(func) {
@@ -459,7 +458,7 @@ export const  SequenceableCollection = Collection <| function(){
 	  do(func) {
 		let index = 0;
 		const length = this.size;
-		while (++indexM=length) func(this.at(index));
+		while (++indexM<=length) func(this.at(index));
 		return this;
 	  }
 	}.constructor.{
@@ -581,12 +580,12 @@ export const Interval = SequenceableCollection <| function() {
 	     let i = 1;
 	     if (this[step]<0) {
 	       while(this[stop]<=nextValue) {
-	         result.atPut(i++,func(nextValue);
+	         result.atPut(i++,func(nextValue));
 	         aValue += this[step];
 	        }
 	     } else {
 	       while(this[stop]>=nextValue) {
-	         result.atPut(i++,func(nextValue);
+	         result.atPut(i++,func(nextValue));
 	         aValue += this[step];
 	        }
          };
@@ -618,7 +617,7 @@ export const  OrderedCollection = BasicStorageCollection <| function(space=10) {
       const firstIndx = Math.max(Math.floor(space / 2),1);
       this.{
         [firstIndex]: firstIndx,
-        [lastIndex]:  Math.max(firstIndx-1,0
+        [lastIndex]:  Math.max(firstIndx-1,0)
       }
     }.prototype.{
       //accessing protocol
@@ -650,7 +649,7 @@ export const  OrderedCollection = BasicStorageCollection <| function(space=10) {
 	    return newObject;
 	  },
 	  addAll(aCollection) {
-	     aCollection.do(function(element) {this.addLast(element)};
+	     aCollection.do(function(element) {this.addLast(element)});
 	     return aCollection;
 	  },
 	  //removing protocol
@@ -679,7 +678,7 @@ export const  OrderedCollection = BasicStorageCollection <| function(space=10) {
       //enumerating protocol
       do(func) {
         let index = this[firstIndex];
-        while (index <= this[lastIndex] 
+        while (index <= this[lastIndex]) 
           func(this.basicAt(index++));
         return this;
       },
@@ -690,7 +689,7 @@ export const  OrderedCollection = BasicStorageCollection <| function(space=10) {
       },
       select(pred) {
         const newCollection = new this.species(this.basicSize);
-        this.do(function(each) {if (pred(each) newCollection.add(each)});
+        this.do(function(each) {if (pred(each)) newCollection.add(each)});
         return newCollection;
       },
       //private
