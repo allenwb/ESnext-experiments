@@ -17,6 +17,7 @@ The experiments are:
 
  * ST80collections-exp1.js This is the basic experiment using <| and .{ and the compositional operators
  * ST80collections-exp1-nocomma.js Just like exp1, except that it consider the comma is optional after a concise method or put/get property within an object literal
+ * ST80collections-exp1-nc-narcissus.js Just like exp1-nocomma, except that it only uses features that are support by the version of Narcissus at <https://github.com/allenwb/narcissus>
  * ST80collections-exp2.js This is the same experiment using <| and .={ and the compositional operators
  * ST80collections-exp3.js This is the same experiment using <| and .+{ and the compositional operators
  * ST80collections-exp0.js This is a baseline  using <| and the Object.extend() function as the compositional operators
