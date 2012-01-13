@@ -21,4 +21,5 @@ The experiments are:
  * ST80collections-exp2.js This is the same experiment using <| and .={ and the compositional operators
  * ST80collections-exp3.js This is the same experiment using <| and .+{ and the compositional operators
  * ST80collections-exp0.js This is a baseline  using <| and the Object.extend() function as the compositional operators
+ * ST80collections-exp0-blp.js This is just like exp0 but uses block lambdas with paren free calls
 

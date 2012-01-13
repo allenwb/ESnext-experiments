@@ -5,7 +5,9 @@ for inclusion in future editions of the ECMAScript language specification.
 
 The purpose of this translation is to test the expressiveness of the extended language.
 
-***** This Version uses Object.extend(obj, { }) instead of obj.{ } 
+***** This Version uses Object.extend(obj, { }) instead of obj.{ }
+      It also uses Block Lambdas with ParenFree calls, blocks that make use of Tennets
+          Correspondence Principle are tagged with /*tcp*/
 
 This code has not been tested.  It undoubtably has bugs and may have syntax errors.
 
@@ -19,7 +21,7 @@ The Xerox and Apple sources for Squeak are licensed under the Apache V2.0 Licens
 
 Original material in this file was written by Allen Wirfs-Brock and is
 
-Copyright Mozilla Foundation, 2011
+Copyright Mozilla Foundation, 2012
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
 except in compliance with the License. You may obtain a copy of the License at
@@ -44,7 +46,9 @@ The code uses the following proposed ES.next extension:
    *  super propertry references
    *  private names created via Name.create
    *  using [expr] in the propertyname position in an object literal, evaluate the expr to get the name
-   
+   *  Block Lambda expressions with paren free calls and Tennent's Correspondence support (lexical
+         this, return from enclusing function, etc)
+
 For these examples <| used with a function expression sets the [[Prototype]] of the object created
 as the value of the function's "prototype" property to the value of the "prototype" property of the
 the LHS object.  This is in addition to setting the [[Prototype]] of the function object itself.
@@ -110,91 +114,77 @@ export const Collection = Object.extend(Object.extend(AbstractClass <| function(
 	  //adding protocol
 	  add(anObj) {this.subclassResponsibility},
 	  addAll(aCollection) {
-		const self=this;
-		aCollection.do(function (each) {self.add(each)});
+		aCollection.do {|each| this.add(each)};    /*tcp*/
 		return this;
 	  },
 	  //removing protocol
 	  removeIfAbsent(anObj,errHandler) {this.subclassResponsibility},
 	  remove(anObj) {
-		const self=this;
-		this.removeIfAbsent(anObj,function() {return self.errorNotFound()});
+		this.removeIfAbsent(anObj) {|| return this.errorNotFound()};    /*tcp*/
 		return this;
 	  },
 	  removeAll(aCollection) {
-		const self=this;
-		aCollection.do(function(each) {self.remove(each)});
+		aCollection.do {|each| {this.remove(each)};    /*tcp*/
 		return aCollection;
 	  },
 	  //testing protocol
 	  isEmpty() {return this.size == 0},
 	  includes(anObj) {
-		try {
-		  this.do(function(each) {if (anObj === each) throw "object found"});
-		} catch (e) {
-		  if (e==="object found") return true;
-		  else throw e;
-		};
+		this.do {|each| if (anObj === each) return true};
 		return false;
 	  },
 	  occurencesOf(anObj) {
 		let tally = 0;
-		this.do(function(each) {if (anObj===each) ++tally});
+		this.do {|each| if (anObj===each) ++tally};
 		return tally;
 	  },
 	  //accessing
 	  get size() {
 		 let tally = 0;
-		 this.do(function(each) {++tally});
+		 this.do {|each| ++tally};
 		 return tally;
 	  },
 	  //enumerating protocol
 	  do(func) {this.subclassResponsibility},
 	  collect(func) {
 		const newCollection = new this.species;
-		this.do(function(each) {newCollection.add(func(each))});
+		this.do {|each| newCollection.add(func(each))});
 		return newCollection;
 	  },
 	  detect(pred) {
-		const self=this;
-		return this.detectIfNone(pred,function() {return self.errorNotFound()});
+		return this.detectIfNone(pred) {||return this.errorNotFound()};    /*tcp*/
 	  },
 	  detectIfNone(pred,exceptFunc) {
-		try {
-		  this.do(function(each) {if (pred(each)) throw {detected:each}});
-		} catch (e) {
-		  if (e.hasOwnProperty('detected')) return e.detected;
-		  else throw e;
-		};
+		this.do {|each| if (pred(each)) return each};    /*tcp*/
 		return exceptFunc();
 	  },
 	  injectInto(thisValue,binaryFunc) {
 		let nextValue = thisValue;
-		this.do(function(each){nextValue = binaryFunc(nextValue,each)});
+		this.do {|each| nextValue = binaryFunc(nextValue,each)};
 		return nextValue;
 	  },
 	  reject(pred) {
-		return this.select(function(element) {return !pred(element)});
+		return this.select {|element| !pred(element)};
 	  },
 	  select(pred) {
 		const newCollection = new this.species();
-		this.do(function(each) {if (pred(each)) newCollection.add(each)});
+		this.do {|each| if (pred(each)) newCollection.add(each)};
 		return newCollection;
 	  },
 	  //converting protocol
 	  asBag() {
 		const aBag = new Bag();
-		this.do(function(each){aBag.add(each)});
+		this.do {|each| aBag.add(each)};
 		return aBag;
 	  },
 	  asOrderedCollection() {
 		const anOrderedCollection = new OrderedCollection(this.size);
-		this.do(function(each){anOrderedCollection.addLast(each)});
+		this.do {|each| anOrderedCollection.addLast(each)};
 		return anOrderedCollection;
 	  },
 	  asSet() {
 		const aSet = new Set();
-		this.do(function(each){aSet.add(each)});
+		this.do {|each| aSet.add(each)};
 		return aSet;
 	  },
 	  asSortedCollection(sortFunc) {
@@ -207,18 +197,13 @@ export const Collection = Object.extend(Object.extend(AbstractClass <| function(
 	  printOn(aStream) {
 		const tooMany = aStream.position + this.maxPrint;
 		aStream.nextPutAll(this.class.name+'(');
-		try {
-		  this.do(function(element) {
-			if (aStream.position > tooMany) {
-			  aStreamNextPutAll('....etc...)');
-			  throw "too long";
-			};
-			if (element.printOn) element.printOn(aStream);
-			else aStream.nextPutAll(element.toString());
-		  });
-		} catch(e) {
-			 if (e==="too long") return this;
-			 else throw e;
+		this.do {|element|
+	      if (aStream.position > tooMany) {
+			aStreamNextPutAll('....etc...)');
+			return this;                               /*tcp*/
+		  };
+		  if (element.printOn) element.printOn(aStream);
+		  else aStream.nextPutAll(element.toString());
 		};
 		aStream.nextPut(')');
 		return this;
@@ -238,7 +223,7 @@ export const Collection = Object.extend(Object.extend(AbstractClass <| function(
 	}).constructor,{
 	  with(...args) {
 		const newCollection = new this(args.length);
-		args.forEach(function(element) {newCollection.add(element)});
+		args.forEach {|element| newCollection.add(element)};
 		return newCollection;
 	  },
 	  className: "Collection",
@@ -277,7 +262,7 @@ export const Set = Object.extend(Object.extend(Collection <| function(initialSiz
 	  removeIfAbsent(oldObject,exceptionBlock) {
 		const marker={};
 		let notFound = marker;
-		const index = this.findIfAbsent(oldObject, function() {notFound=exceptionBlock()});
+		const index = this.findIfAbsent(oldObject) {|| notFound=exceptionBlock()};
 		if (notFound!==marker) return notFound;
 		this[setContents][index]=Collection.nil;
 		--this[setTally];
@@ -329,7 +314,7 @@ export const Bag = Object.extend(Object.extend(Collection <| function() {
 	  atPut(index, anObject) {return this.errorNotKeyed()},
 	  get size() {
 		 let tally = 0;
-		 this[bagContents].do(function(each) {++tally});
+		 this[bagContents].do {|each| ++tally};
 		 return tally;
 	  },
 	  //testing protocol
@@ -358,9 +343,9 @@ export const Bag = Object.extend(Object.extend(Collection <| function() {
 	  },
 	  //enumerating protocol
 	  do(func) {
-		this[bagContents].associationsDo(function(assoc) {
+		this[bagContents].associationsDo {|assoc|
 		  for (let i=0,count=assoc.value; i < count;++i) func(assoc.key);
-	    });
+	    };
 		return this;
 	  }
 	}).constructor,{
@@ -378,7 +363,7 @@ export const Dictionary = Object.extend(Object.extend(Set <| function(...args) {
 	   super.constructor(...args);
 	}.prototype, {
 	  //accessing protocol
-	  at(key) {return this.atIfAbsent(key,function(){return this.errorKeyNotFound()})},
+	  at(key) {return this.atIfAbsent(key){||return this.errorKeyNotFound()}},    /*tcp*/
 	  atPut(key, anObject) {
 		const index = this.findKeyOrNil(key);
 		const element = this[setContents][index];
@@ -391,7 +376,7 @@ export const Dictionary = Object.extend(Object.extend(Set <| function(...args) {
 	  atIfAbsent(key,func) {
 		const marker={};
 		let notFound = marker;
-		const index = this.findKeyIfAbsent(key,function() {notFound=func()});
+		const index = this.findKeyIfAbsent(key) {|| notFound=func()};
 		if (notFound!==marker) return notFound;
 		return this[setContents][index].value;
 	  },
@@ -416,7 +401,7 @@ export const Dictionary = Object.extend(Object.extend(Set <| function(...args) {
 	  },
 	  //enumerating protocol
 	  do(func) {
-		 this.associationsDo(function(assoc) {func(assoc.value)});
+		 this.associationsDo {|assoc| func(assoc.value)};
 		 return this;
 	  },
 	  associationsDo(func) {
@@ -425,12 +410,12 @@ export const Dictionary = Object.extend(Object.extend(Set <| function(...args) {
 	  },
 	  collect(func) {
 		const newCollection = new Bag;
-		this.do(function(each) {newCollection.add(func(each))});
+		this.do {|each| newCollection.add(func(each))};
 		return newCollection;
 	  },
 	  select(pred) {
 		const newCollection = new this.species();
-		this.associationsDo(function(each) {if (pred(each.value)) newCollection.add(each)});
+		this.associationsDo {|each| if (pred(each.value)) newCollection.add(each)};
 		return newCollection;
 	  },
 	  //"protected" internal methods that access bagContents as a hash table
@@ -519,7 +504,7 @@ export const ArrayedCollection = Object.extend(Object.extend(SequenceableCollect
 	  with(...args) {
 		const newCollection = new this(args.length);
 		let i = 1;
-		args.forEach(function(element) {newCollection.atPut(i++,element)});
+		args.forEach {|element| newCollection.atPut(i++,element)};
 		return newCollection;
 	  },
 	  className: "ArrayedCollection",
@@ -653,8 +638,7 @@ export const  OrderedCollection = Object.extend(Object.extend(BasicStorageCollec
 	    return newObject;
 	  },
 	  addAll(aCollection) {
-	     const self = this;
-	     aCollection.do(function(element) {self.addLast(element)});
+	     aCollection.do {|element| this.addLast(element)};       /*tcp*/
 	     return aCollection;
 	  },
 	  //removing protocol
@@ -689,12 +673,12 @@ export const  OrderedCollection = Object.extend(Object.extend(BasicStorageCollec
       },
       collect(func) {
         const newCollection = new this.species(this.basicSize);
-        this.do(function(each) {newCollection.add(func(each))});
+        this.do {|each| newCollection.add(func(each))};
         return newCollection;
       },
       select(pred) {
         const newCollection = new this.species(this.basicSize);
-        this.do(function(each) {if (pred(each)) newCollection.add(each)});
+        this.do {|each| if (pred(each)) newCollection.add(each)};
         return newCollection;
       },
       //private
