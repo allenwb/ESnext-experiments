@@ -24,4 +24,5 @@ The experiments are:
  * ST80collections-exp0-blp.js This is just like exp0 but uses block lambdas with paren free calls
  * ST80collections-exp6.js This is the same as exp1 but using the operator keyword "beget" in place of <| 
  * ST80collections-exp7.js This is the same as exp1 but using :: in place of <| 
+ * ST80collections-exp8.js This is the same as exp1 but using ::: in place of <| 
 
