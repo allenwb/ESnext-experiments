@@ -251,7 +251,7 @@ module SmalltalkCollections {
        const index = this.findElementOrNil(newObject);
        if (this.@setContents[index]===Collection.nil) {
          this.@setContents[index]=newObject;
-         ++this[setTally];
+         ++this.@setTally;
        }
        return newObject;
     }
