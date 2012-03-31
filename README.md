@@ -28,5 +28,5 @@ The experiments are:
  
  * ST80collections-exp9.js User maximal minimal class def syntax, .{, and arrow functions 
  * ST80collections-exp10.js User maximal minimal class def syntax, and arrow functions, but no .{
- * ST80collections-exp1.js Just like exp9 but using <| and .{ instead of class defs
+ * ST80collections-exp11.js Just like exp9 but using <| and .{ instead of class defs
 
