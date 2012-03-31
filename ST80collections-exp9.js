@@ -5,8 +5,8 @@ for inclusion in future editions of the ECMAScript language specification.
 
 The purpose of this translation is to test the expressiveness of the extended language.
 
-***** This Version uses maximally minimal class declarations, the .{ operator, and
-***** maximally minimal class declarations.
+***** This Version uses maximally minimal class declarations, and the .{ operator.
+***** It also uses arrow functions.
 
 
 This code has not been tested.  It undoubtably has bugs and may have syntax errors.
@@ -38,13 +38,13 @@ and limitations under the License.
 The code uses the following proposed ES.next extension:
    *  modules and modules exports
    *  maximally minimal class declarations 
-   *  arrow function syntax
    *  the .{ operator -- extends the LHS object with properties from an object literal
+   *  arrow function syntax
    *  concise method properties in obj lits - foo() {} defines a non-enumerable function data property
    *  let and const declarations
    *  super propertry references
    *  private names created via Name.create
-   *  using @identifier in the propertyname position in an object literal, evaluate the expr to get a private name
+   *  using @identifier in the propertyname position in class definitions and object literal, evaluate the expr to get a private name
    
 Maximally minimal class declarations have the form
    class  <className> extends <expr> {
@@ -53,7 +53,9 @@ Maximally minimal class declarations have the form
       ...
     }
 
-such class declaration only define the construtor and prototype object methods
+Such class declaration only define the construtor and prototype object methods
+In this version, instance variables are created via this.{} object extensions in the constructor.
+Class method class properties are created by using .{} with the class object.
 
 Private named properties are defined within object literals (and class declarations) as follows:
 

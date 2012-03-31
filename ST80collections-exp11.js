@@ -37,9 +37,9 @@ and limitations under the License.
 /*****
 The code uses the following proposed ES.next extension:
    *  modules and modules exports
-   *  arrow function syntax
    *  the <| operator -- defines the [[Prototype]] of a literal
    *  the .{ operator -- extends the LHS object with properties from an object literal
+   *  arrow function syntax
    *  concise method properties in obj lits - foo() {} defines a non-enumerable function data property
    *  let and const declarations
    *  super propertry references

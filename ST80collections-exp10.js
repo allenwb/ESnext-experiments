@@ -5,8 +5,8 @@ for inclusion in future editions of the ECMAScript language specification.
 
 The purpose of this translation is to test the expressiveness of the extended language.
 
-***** This Version uses maximally minimal class declarations, and
-***** maximally minimal class declarations, but does not use the .{ operator.
+***** This Version uses maximally minimal class declarations but does not use the .{ operator.
+***** It also uses arrow functions.
 
 
 This code has not been tested.  It undoubtably has bugs and may have syntax errors.
@@ -38,13 +38,13 @@ and limitations under the License.
 The code uses the following proposed ES.next extension:
    *  modules and modules exports
    *  maximally minimal class declarations 
-   *  arrow function syntax
    *  Object.defineMethod
+   *  arrow function syntax
    *  concise method properties in obj lits - foo() {} defines a non-enumerable function data property
    *  let and const declarations
    *  super propertry references
    *  private names created via Name.create
-   *  using @identifier in the propertyname position in an object literal, evaluate the expr to get a private name
+   *  using @identifier in the propertyname position in class definitions and object literal, evaluate the expr to get a private name
    
 Maximally minimal class declarations have the form
    class  <className> extends <expr> {
@@ -53,7 +53,10 @@ Maximally minimal class declarations have the form
       ...
     }
 
-such class declaration only define the construtor and prototype object methods
+Such class declaration only define the construtor and prototype object methods.
+In this version, instance variables are created via assignments to this in the constructor.
+Class method class properties are created via Object.defineMethod and class data properties are
+created via assignment to the class object.
 
 Private named properties are defined within object literals (and class declarations) as follows:
 
@@ -219,12 +222,12 @@ module SmalltalkCollections {
 	  }
 	  get maxPrint() {return 5000} //max size of a printOn string
   }
+  //class properties
   Object.defineMethod(Collection, "with", function (...args) {
       const newCollection = new this(args.length);
       args.forEach(element => newCollection.add(element));
       return newCollection;
   });
-  //class properties
   Object.className = "Collection";
   Object.defineProperty(Collection,'nil',  //object used to indicate an empty slot in a collection
     {value: {}, writable: false,configurable:false,enumerable:false});
