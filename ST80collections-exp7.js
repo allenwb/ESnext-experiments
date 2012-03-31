@@ -359,8 +359,8 @@ export const Bag = Collection :: function() {
 	  do(func) {
 		this[bagContents].associationsDo(function(assoc) {
 		  for (let i=0,count=assoc.value; i < count;++i) func(assoc.key);
-		  return this;
 	    });
+		return this;
 	  }
 	}.constructor.{
 	  className: "Bag"
@@ -377,7 +377,10 @@ export const Dictionary = Set :: function(...args) {
 	   super.constructor(...args);
 	}.prototype.{
 	  //accessing protocol
-	  at(key) {return this.atIfAbsent(key,function(){return this.errorKeyNotFound()})},
+	  at(key) {
+	     const self=this;
+	     return this.atIfAbsent(key,function(){return self.errorKeyNotFound()}
+	  },
 	  atPut(key, anObject) {
 		const index = this.findKeyOrNil(key);
 		const element = this[setContents][index];

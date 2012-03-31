@@ -378,7 +378,10 @@ export const Dictionary = Object.extend(Object.extend(Set <| function(...args) {
 	   super.constructor(...args);
 	}.prototype, {
 	  //accessing protocol
-	  at(key) {return this.atIfAbsent(key,function(){return this.errorKeyNotFound()})},
+	  at(key) {
+	     const self=this;
+	     return this.atIfAbsent(key,function(){return self.errorKeyNotFound()}
+	  },
 	  atPut(key, anObject) {
 		const index = this.findKeyOrNil(key);
 		const element = this[setContents][index];

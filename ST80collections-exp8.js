@@ -5,7 +5,7 @@ for inclusion in future editions of the ECMAScript language specification.
 
 The purpose of this translation is to test the expressiveness of the extended language.
 
-***** This Version uses ::: instead of <| as the "rototype for" operator
+***** This Version uses <| instead of <| as the "rototype for" operator
 
 
 This code has not been tested.  It undoubtably has bugs and may have syntax errors.
@@ -36,7 +36,7 @@ and limitations under the License.
 /*****
 The code uses the following proposed ES.next extension:
    *  modules and modules exports
-   *  the ::: operator -- defines the [[Prototype]] of a literal
+   *  the <| operator -- defines the [[Prototype]] of a literal
    *  the .{ operator -- extends the LHS object with properties from an object literal
    *  concise method properties in obj lits - foo() {} defines a non-enumerable function data property
    *  let and const declarations
@@ -44,21 +44,21 @@ The code uses the following proposed ES.next extension:
    *  private names created via Name.create
    *  using [expr] in the propertyname position in an object literal, evaluate the expr to get the name
    
-For these examples ::: used with a function expression sets the [[Prototype]] of the object created
+For these examples <| used with a function expression sets the [[Prototype]] of the object created
 as the value of the function's "prototype" property to the value of the "prototype" property of the
 the LHS object.  This is in addition to setting the [[Prototype]] of the function object itself.
 In other words, it builds sets the [[Prototype]] of both the function and of function.prototype to
 potentially different values.  For example:
 
 function foo() {};
-const bar = foo ::: function() {};
+const bar = foo <| function() {};
 
 Object.getPrototypeOf(bar)===foo; //true
 Object.getPrototypeOf(bar.prototype)===foo.prototype;  //true
 
 This experiment defines "classes" based upon the following code pattern:
 
-const className = superClass ::: function(/*constructor parameters * /) {
+const className = superClass <| function(/*constructor parameters * /) {
   //constructor body 
   super.constructor(/*arguments to super constructor * /);
   this.{
@@ -86,11 +86,11 @@ let obj = {
 module SmalltalkCollections {	
 	
 	//define a non constructible superclass that provides some Smalltalk-like conventions
-	const AbstractClass = Function.prototype ::: {
+	const AbstractClass = Function.prototype <| {
 	  subclassResponsibility() {throw new Error(this.name+" did not implemented an abstract method")},
 	  shouldNotImplement() {throw new Error(this.name+" should not implemented by "+this.name)},
 	  name: "AbstractClass",
-	  prototype: Object.prototype :::{
+	  prototype: Object.prototype <|{
 		get class() {return this.constructor},
 		error(message) {throw new Error(message)},
 		subclassResponsibility() {return this.class.subclassResponsibility()},
@@ -104,7 +104,7 @@ module SmalltalkCollections {
 	a group of elements.
 	*/
 	
-export const Collection = AbstractClass ::: function(n) {
+export const Collection = AbstractClass <| function(n) {
 	}.prototype.{
 	  //adding protocol
 	  add(anObj) {this.subclassResponsibility},
@@ -249,7 +249,7 @@ export const Collection = AbstractClass ::: function(n) {
 	  
 	const setContents = Name.create(), setTally = Name.create();
 	
-export const Set = Collection ::: function(initialSize=2) {
+export const Set = Collection <| function(initialSize=2) {
 	   
 	   this.{
 		  [setContents]: new Array(initialSize),
@@ -318,7 +318,7 @@ export const Set = Collection ::: function(initialSize=2) {
 	
 	const bagContents = Name.create();
 	
-export const Bag = Collection ::: function() {
+export const Bag = Collection <| function() {
 	   this.{
 		  [bagContent]: new Dictionary()
 		};
@@ -358,9 +358,9 @@ export const Bag = Collection ::: function() {
 	  //enumerating protocol
 	  do(func) {
 		this[bagContents].associationsDo(function(assoc) {
-		  for (let i=0,count=assoc.value; i < count;++i) func(assoc.key);
-		  return this;
+		  for (let i=0,count=assoc.value; i < count;++i) func(assoc.key);		  return this;
 	    });
+		return this;
 	  }
 	}.constructor.{
 	  className: "Bag"
@@ -373,11 +373,14 @@ export const Bag = Collection ::: function() {
 	to =. The external name is referred to as the key.
 	*/
 	
-export const Dictionary = Set ::: function(...args) {
+export const Dictionary = Set <| function(...args) {
 	   super.constructor(...args);
 	}.prototype.{
 	  //accessing protocol
-	  at(key) {return this.atIfAbsent(key,function(){return this.errorKeyNotFound()})},
+	  at(key) {
+	     const self=this;
+	     return this.atIfAbsent(key,function(){return self.errorKeyNotFound()}
+	  },
 	  atPut(key, anObject) {
 		const index = this.findKeyOrNil(key);
 		const element = this[setContents][index];
@@ -450,7 +453,7 @@ export const Dictionary = Set ::: function(...args) {
 	integers referred to as indices.
 	*/
 
-export const  SequenceableCollection = Collection ::: function(){
+export const  SequenceableCollection = Collection <| function(){
 	  super.constructor();
 	}.prototype.{
 	  //accessing protocol
@@ -479,7 +482,7 @@ export const  SequenceableCollection = Collection ::: function(){
 	//Interval private instance variables
 	const storage=Name.create();  
 	
-    const BasicStorageCollection = SequenceableCollection ::: function(elements) {
+    const BasicStorageCollection = SequenceableCollection <| function(elements) {
       super.constructor();
 	  this.{
 	    [storage]: new Array(elements+1)
@@ -501,7 +504,7 @@ export const  SequenceableCollection = Collection ::: function(){
 	/* I am an abstract collection of elements with a fixed range of integers
 	(from 1 to n>=1) as external keys.
 	*/
-export const ArrayedCollection = SequenceableCollection ::: function(elements=0) {
+export const ArrayedCollection = SequenceableCollection <| function(elements=0) {
 	  super.constructor(elements);
 	}.prototype.{
 	  //accessing protocol
@@ -528,7 +531,7 @@ export const ArrayedCollection = SequenceableCollection ::: function(elements=0)
 	/* I present an ArrayedCollection whose elements are objects.
 	*/
 
-export const SmalltalkArray = ArrayedCollection ::: function(elements=0) {
+export const SmalltalkArray = ArrayedCollection <| function(elements=0) {
 	  super.constructor(elements);
 	}.prototype.{
 	  //converting protocol
@@ -543,7 +546,7 @@ export const SmalltalkArray = ArrayedCollection ::: function(elements=0) {
 	//Interval private instance variables
 	const start=Name.create(), stop=Name.create(), step=Name.create();
 	
-export const Interval = SequenceableCollection ::: function() {
+export const Interval = SequenceableCollection <| function() {
 	  super.constructor();
 	}.prototype.{
 	  //accessing protocol
@@ -615,7 +618,7 @@ export const Interval = SequenceableCollection ::: function() {
 	//Interval private instance variables
 	const firstIndex=Name.create(), lastIndex=Name.create();
 	
-export const  OrderedCollection = BasicStorageCollection ::: function(space=10) {
+export const  OrderedCollection = BasicStorageCollection <| function(space=10) {
       super.constructor(space);
       const firstIndx = Math.max(Math.floor(space / 2),1);
       this.{

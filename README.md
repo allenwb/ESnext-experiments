@@ -25,4 +25,8 @@ The experiments are:
  * ST80collections-exp6.js This is the same as exp1 but using the operator keyword "beget" in place of <| 
  * ST80collections-exp7.js This is the same as exp1 but using :: in place of <| 
  * ST80collections-exp8.js This is the same as exp1 but using ::: in place of <| 
+ 
+ * ST80collections-exp9.js User maximal minimal class def syntax, .{, and arrow functions 
+ * ST80collections-exp10.js User maximal minimal class def syntax, and arrow functions, but no .{
+ * ST80collections-exp1.js Just like exp9 but using <| and .{ instead of class defs
 
